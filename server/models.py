@@ -1,11 +1,11 @@
-from exts import db
-from sqlalchemy.orm import validates
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
+
+from sqlalchemy.orm import validates
+from sqlalchemy.ext.hybrid import hybrid_property
 from flask_migrate import Migrate
 
-
+from config import db
 
 
 class User(db.Model, SerializerMixin):
