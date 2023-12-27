@@ -1,12 +1,13 @@
-from exts import db
-from sqlalchemy.orm import validates
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
+
+from sqlalchemy.orm import validates
+from sqlalchemy.ext.hybrid import hybrid_property
 from flask_migrate import Migrate
 
-
-
+from config import db
+import stripe
+import os
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
@@ -66,7 +67,7 @@ class Sneaker(db.Model):
         if not self.stripe_product_id or not self.stripe_price_id:
             # Create product on Stripe
             stripe_product = stripe.Product.create(
-                name=self.title,
+                name=self.name,
                 description=self.description,
                 type="service",
             )
