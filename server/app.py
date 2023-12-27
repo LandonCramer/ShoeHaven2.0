@@ -78,6 +78,16 @@ class RefreshToken(Resource):
 
 api.add_resource(RefreshToken, '/refresh')
 
+class CurrentUser(Resource):
+    @jwt_required()
+    def get(self):
+        try:
+            current_id = get_jwt_identity()
+            return {'current_user_id': current_id}, 200
+        except Exception as e:
+            return {'error': str(e)}, 500
+
+
 class Sneakers(Resource):
     def get(self):
         """Get all sneakers"""
