@@ -53,7 +53,7 @@ function SneakerCard({image, name, color, link, description, price, id, brand, c
             {shopDescription}
           </Card.Text>
           <Button variant="dark" href={shopLink}>
-             {"Purchase for $"}{shopPrice}{" from Retailer"}
+             {"Purchase for $"}{shopPrice}{" from ShoeHaven"}
              </Button><br/><br/>
           {/* <Button variant="dark" onClick={addShoesToCart}>
              {"Add to Cart"} </Button> */}
