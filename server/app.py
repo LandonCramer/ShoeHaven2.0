@@ -87,6 +87,7 @@ class CurrentUser(Resource):
         except Exception as e:
             return {'error': str(e)}, 500
 
+api.add_resource(CurrentUser, '/currentuser')
 
 class Sneakers(Resource):
     def get(self):

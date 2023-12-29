@@ -1,12 +1,15 @@
 import React from 'react';
-import { AuthProvider } from './Helpers/AuthProvider'
-import Router from './Helpers/Router'
-
+import UserProvider  from '../Helpers/AuthProvider'
+import Router from '../Helpers/Router'
+import NavBar from '../components/Navbar';
 function App() {
   return (
-    <AuthProvider>
-      <Router />
-    </AuthProvider>
+    
+     <UserProvider>
+       <NavBar />
+        <Router /> 
+     </UserProvider>
+    
   );
 }
 
