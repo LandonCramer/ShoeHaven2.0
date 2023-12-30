@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SneakerCard from "./SneakerCard";
 import { Modal, Form, Button, InputGroup } from "react-bootstrap";
 import { UserContext } from "../Helpers/AuthProvider";
@@ -15,27 +15,47 @@ const LoggedInHome = () => {
     price: "",
     image: "",
     link: "",
-    description: ""
+    description: "",
   });
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
 
-  const { currentUser } = useContext(UserContext);
+  const { currentUser, handleSetUser } = useContext(UserContext);
+  console.log("currentUser home page: ", currentUser);
 
   useEffect(() => {
+    if (currentUser && Object.keys(currentUser).length === 0) {
+      navigate("/login");
+    }
+
+    // check for currentUser
+    fetch("/currentuser", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    }).then((res) => {
+      if (res.ok) {
+        res.json().then((user) => {
+          handleSetUser(user);
+        });
+      }
+    });
+    console.log("currentUser home page: ", currentUser);
+
     fetchSneakers();
   }, []);
 
   const fetchSneakers = () => {
     fetch("http://127.0.0.1:5555/sneakers")
-      .then(res => res.json())
-      .then(data => setSneakers(data))
-      .catch(err => console.log(err));
+      .then((res) => res.json())
+      .then((data) => setSneakers(data))
+      .catch((err) => console.log(err));
   };
 
   const showModal = (id) => {
-    const selectedSneaker = sneakers.find(sneaker => sneaker.id === id);
+    const selectedSneaker = sneakers.find((sneaker) => sneaker.id === id);
     if (selectedSneaker) {
-      setSneakerForm({...selectedSneaker});
+      setSneakerForm({ ...selectedSneaker });
       setSneakerId(id);
       setShow(true);
     }
@@ -50,7 +70,7 @@ const LoggedInHome = () => {
       price: "",
       image: "",
       link: "",
-      description: ""
+      description: "",
     });
   };
 
@@ -75,47 +95,47 @@ const LoggedInHome = () => {
       return;
     }
 
-    let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY');
+    let token = localStorage.getItem("REACT_TOKEN_AUTH_KEY");
     const requestOptions = {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${JSON.parse(token)}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${JSON.parse(token)}`,
       },
-      body: JSON.stringify(sneakerForm)
+      body: JSON.stringify(sneakerForm),
     };
 
     fetch(`http://127.0.0.1:5555/sneaker/${sneakerId}`, requestOptions)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         console.log(data);
         fetchSneakers();
         closeModal();
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   const deleteSneaker = (id) => {
     console.log(id);
-    let token = localStorage.getItem('REACT_TOKEN_AUTH_KEY');
+    let token = localStorage.getItem("REACT_TOKEN_AUTH_KEY");
     const requestOptions = {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'content-type': 'application/json',
-        'Authorization': `Bearer ${JSON.parse(token)}`
-      }
+        "content-type": "application/json",
+        Authorization: `Bearer ${JSON.parse(token)}`,
+      },
     };
 
     fetch(`http://127.0.0.1:5555/sneaker/${id}`, requestOptions)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         console.log(data);
         fetchSneakers();
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
-  const storeFront = sneakers.map(shoe => (
+  const storeFront = sneakers.map((shoe) => (
     <SneakerCard
       key={shoe.id}
       id={shoe.id}
@@ -133,11 +153,7 @@ const LoggedInHome = () => {
 
   return (
     <div className="sneakers">
-      <Modal
-        show={show}
-        size="lg"
-        onHide={closeModal}
-      >
+      <Modal show={show} size="lg" onHide={closeModal}>
         <Modal.Header closeButton>
           <Modal.Title>Update Sneaker</Modal.Title>
         </Modal.Header>
@@ -156,7 +172,7 @@ const LoggedInHome = () => {
               />
             </Form.Group>
             {/* Add other form fields similarly... */}
-            
+
             <Button className="right-button" variant="primary" type="submit">
               Submit
             </Button>
