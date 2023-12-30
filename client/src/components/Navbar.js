@@ -1,16 +1,20 @@
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { UserContext } from "../Helpers/AuthProvider";
 
 const LoggedInLinks = () => {
-    const { logoutUser } = useContext(UserContext);
+  const { logoutUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
-    const handleLogout = (e) => {
-      e.preventDefault();
-      logoutUser();
-      // Optionally redirect to home or login page
-    };
-  
+  const handleLogout = (e) => {
+    e.preventDefault();
+    logoutUser();
+    // Optionally redirect to home or login page
+
+    navigate("/login");
+  };
+
   return (
     <>
       <li className="nav-item active">
