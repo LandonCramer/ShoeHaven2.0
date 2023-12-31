@@ -23,8 +23,8 @@ const LoggedInLinks = () => {
         </Link>
       </li>
       <li className="nav-item">
-        <Link className="nav-link active" to="/sneaker">
-          Sneakers
+        <Link className="nav-link active" to="/my-sneaker">
+          User Sneakers
         </Link>
       </li>
       <li className="nav-item">
