@@ -207,6 +207,67 @@ class UpdateSneaker(Resource):
 # Add the UpdateSneaker resource to the API
 api.add_resource(UpdateSneaker, '/sneaker/<int:id>')
 
+
+
+# When the user clicks add to Collection we are adding this to the UserSneaker table
+class AddToCollection(Resource):
+    def post(self):
+        try:
+            data = request.json
+            print('ADD TO COLLECTION', data)
+            user_id = data['userID']
+            sneaker_id = data['sneakerID']
+
+            # Check if the user already has this sneaker in their collection
+            existing_record = UserSneaker.query.filter_by(user_id=user_id, sneakerid=sneaker_id).first()
+            if existing_record:
+                return {'message': 'Sneaker already in collection'}, 400
+
+            # Add new record to UserSneaker table
+            new_user_sneaker = UserSneaker(user_id=user_id, sneakerid=sneaker_id)
+            db.session.add(new_user_sneaker)
+            db.session.commit()
+
+            return {'message': 'Sneaker added to collection'}, 200
+
+        except Exception as e:
+            return {'error': str(e)}, 500
+
+api.add_resource(AddToCollection, '/add-to-collection')
+
+# getting all the sneakers from user to display on their page.
+class UserSneakers(Resource):
+    def get(self, user_id):
+        print('THE USER', user_id)
+        try:
+            user_sneakers = UserSneaker.query.filter_by(user_id=user_id).all()
+
+            sneakers = []
+            for user_sneaker in user_sneakers:
+                sneaker = Sneaker.query.get(user_sneaker.sneakerid)
+                if sneaker:
+                    sneakers.append({
+                        'id': sneaker.id,
+                        'brand': sneaker.brand,
+                        'name': sneaker.name,
+                        'color': sneaker.color,
+                        'description': sneaker.description,
+                        'price': sneaker.price,
+                        'image': sneaker.image,
+                        'link': sneaker.link
+                        # Add any other fields to include
+                    })
+
+            return {'sneakers': sneakers}, 200
+        except Exception as e:
+            print(f"Error: {e}")
+            import traceback
+            traceback.print_exc()  # This will print the full traceback
+            return {"message": "An error occurred while fetching sneakers."}, 500
+api.add_resource(UserSneakers, '/user-sneakers/<string:user_id>')
+
+
+
 class DeleteSneaker(Resource):
     @jwt_required()
     def delete(self, id):

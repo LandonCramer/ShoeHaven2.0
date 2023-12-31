@@ -4,7 +4,7 @@ import ErrorPage from "../components/ErrorPage"
 import Home from "../components/Home"
 import Login from "../components/Login"
 import SignUp from "../components/SignUp"
-import CreateSneaker from "../components/CreateSneaker"
+import UserSneakers from "../components/UserSneakers"
 import SneakerView from "../components/SneakerView"
 import Subscription from "../components/Subscription"
 
@@ -13,7 +13,7 @@ const Router = () => (
     <Route path="/" element={<Home />} />
     <Route path="login" element={<Login />} />
     <Route path="signup" element={<SignUp />} />
-    <Route path="sneaker" element={<CreateSneaker />} />
+    <Route path="my-sneaker" element={<UserSneakers />} />
     <Route path="sneaker/:id" element={<SneakerView />} />
     <Route path="create-subscription-session" element={<Subscription />} />
     <Route path="*" element={<ErrorPage />} />
