@@ -268,18 +268,25 @@ api.add_resource(UserSneakers, '/user-sneakers/<string:user_id>')
 
 
 
-class DeleteSneaker(Resource):
+class DeleteUserSneaker(Resource):
     @jwt_required()
-    def delete(self, id):
-        """Delete sneaker by id"""
-        sneaker_to_delete = Sneaker.query.get_or_404(id)
-        
-        db.session.delete(sneaker_to_delete)
-        db.session.commit()
+    def delete(self):
+        data = request.get_json()
+        user_id = data.get('userId')
+        sneakerid = data.get('sneakerId')
 
-        return {'message': 'Sneaker deleted successfully'}, 200
+        # Check if the sneaker exists in the UserSneaker table
+        user_sneaker_to_delete = UserSneaker.query.filter_by(user_id=user_id, sneakerid=sneakerid).first()
 
-api.add_resource(DeleteSneaker, '/sneaker/<int:id>')
+        if user_sneaker_to_delete:
+            db.session.delete(user_sneaker_to_delete)
+            db.session.commit()
+            return {'message': 'Sneaker removed from collection successfully'}, 200
+        else:
+            return {'message': 'Sneaker not found in collection'}, 404
+
+# Add the resource to the API
+api.add_resource(DeleteUserSneaker, '/delete-sneaker')
 
 if __name__ == "__main__":
     app.run(port=5555, debug=True)

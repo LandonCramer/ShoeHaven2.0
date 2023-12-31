@@ -8,7 +8,7 @@ import { UserContext } from "../Helpers/AuthProvider";
 
 function SneakerCard({image, name, color, link, description, price, id, brand, cartItem, setCartItem, onClick, onDelete}) {
   const { currentUser } = useContext(UserContext);
-  console.log("currentUser home SneakerCard: ", currentUser.current_user_id);
+  // console.log("currentUser home SneakerCard: ", currentUser.current_user_id);
 
     let shopImage = image
     let shopName = name
@@ -33,14 +33,15 @@ function SneakerCard({image, name, color, link, description, price, id, brand, c
     
 
     
-    function addShoesToCart() {
+    function addShoesToCollection() {
       // Send request to backend
-      let token = localStorage.getItem("REACT_TOKEN_AUTH_KEY");
+      let token = localStorage.getItem("accessToken");
+     
       if (currentUser) {
         const requestOptions = {
           method: 'POST',
           headers: { 'Content-Type': 'application/json',
-          Authorization: `Bearer ${JSON.parse(token)}`,
+          Authorization: `Bearer ${token}`,
         },
           body: JSON.stringify({ userID: currentUser.current_user_id, sneakerID: id })
         };
@@ -72,8 +73,8 @@ function SneakerCard({image, name, color, link, description, price, id, brand, c
           <Button variant="dark" href={shopLink}>
              {"Purchase for $"}{shopPrice}{" from ShoeHaven"}
              </Button><br/><br/>
-          <Button variant="dark" onClick={addShoesToCart}>
-             {"Add to Cart"} </Button>
+          <Button variant="dark" onClick={addShoesToCollection}>
+             {"Add to Collection"} </Button>
             <br/>
             <br/>
             <Button variant='primary' onClick={()=>onClick(id)}>Update</Button>
