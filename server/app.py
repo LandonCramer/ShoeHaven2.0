@@ -267,6 +267,24 @@ class UserSneakers(Resource):
 api.add_resource(UserSneakers, '/user-sneakers/<string:user_id>')
 
 
+class AddNoteToUserSneaker(Resource):
+    @jwt_required()
+    def patch(self, sneakerid):
+        current_user_id = get_jwt_identity() # Extracting user ID from the JWT token
+
+        # Fetch the user_sneaker relationship using the user ID and sneaker ID
+        user_sneaker = UserSneaker.query.filter_by(user_id=current_user_id, sneakerid=sneakerid).first_or_404()
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('note', required=True) # Assuming note is required
+        data = parser.parse_args()
+
+        user_sneaker.note = data['note'] # Update the note field
+        db.session.commit()
+
+        return {'message': 'Note added to sneaker successfully'}, 200
+
+api.add_resource(AddNoteToUserSneaker, '/add-note-to-user-sneaker/<int:sneakerid>')
 
 class DeleteUserSneaker(Resource):
     @jwt_required()
