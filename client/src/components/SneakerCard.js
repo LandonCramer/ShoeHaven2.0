@@ -79,7 +79,7 @@ function SneakerCard({image, name, color, link, description, price, id, brand, c
             <br/>
             <Button variant='primary' onClick={()=>onClick(id)}>Update</Button>
             {' '}
-            <Button variant='primary' style={{backgroundColor:'red'}} onClick={onDelete}>Delete</Button>
+           
         </Card.Body>
       </Card>    
   

@@ -19,6 +19,7 @@ function UserSneakerCard({image, name, color, link, description, price, id, bran
     let shopID = id
     let shopBrand = brand
     
+    // Using this to update sneaker
     const newShoe = {
       // key: {shopID},
       id: shopID,
@@ -48,7 +49,7 @@ function UserSneakerCard({image, name, color, link, description, price, id, bran
          
             <br/>
             <br/>
-            <Button variant='primary' onClick={()=>onClick(id)}>Update</Button>
+            <Button variant='primary' onClick={()=>onClick(newShoe)}>Update</Button>
             {' '}
             <Button variant='primary' style={{backgroundColor:'red'}} onClick={()=>onDelete(id)}>Delete</Button>
         </Card.Body>
