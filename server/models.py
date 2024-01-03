@@ -79,7 +79,7 @@ class Sneaker(db.Model):
                 currency="usd",
             )
 
-            # Update artwork record with Stripe IDs
+            # Update sneakeer record with Stripe IDs
             self.stripe_product_id = stripe_product.id
             self.stripe_price_id = stripe_price.id
 

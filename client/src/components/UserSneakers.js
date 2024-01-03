@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from '../Helpers/AuthProvider';
 import UserSneakerCard from './UserSneakerCard';
+import CreateSneakerPage from './CreateSneaker'
 
 import { Modal, Form, Button } from "react-bootstrap";
 
@@ -21,19 +22,26 @@ const UserSneakers = () => {
       description: ''
   });
 
-    useEffect(() => {
-        // Use currentUser.current_user_id to get the user ID
-        const userId = currentUser.current_user_id;
+  useEffect(() => {
+    const userId = currentUser.current_user_id || currentUser.username
 
-        if (userId) {
-            fetch(`/user-sneakers/${userId}`)
-                .then(res => res.json())
-                .then(data => {
-                    setSneakers(data.sneakers);
-                })
-                .catch(error => console.error('Error fetching user sneakers:', error));
-        }
-    }, [currentUser]);
+    if (userId) {
+        const fetchUpdatedSneakers = async () => {
+            try {
+                const response = await fetch(`/user-sneakers/${userId}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setSneakers(data.sneakers);
+            } catch (error) {
+                console.error('Error fetching user sneakers:', error);
+            }
+        };
+
+        fetchUpdatedSneakers();
+    }
+}, [currentUser]);
 
     const openUpdateModal = (sneaker) => {
       console.log('SNEAKER UPDATE', sneaker)
@@ -84,23 +92,25 @@ const handleFormSubmit = (e) => {
   };
 
   fetch(`http://127.0.0.1:5555/add-note-to-user-sneaker/${selectedSneakerId}`, requestOptions)
-      .then(res => res.json())
-      .then(data => {
-          console.log("Response From Update:", data);
-          // Refresh the list of sneakers
-          setShowModal(false);
+  .then(res => res.json())
+  .then(data => {
+      if (data.updatedUserSneaker) {
+          // Update sneakers state with the updated note
           setSneakers(currentSneakers => {
               return currentSneakers.map(sneaker => {
-                  if (sneaker.id === selectedSneakerId) {
-                      return { ...sneaker, description: sneakerForm.description };
+                  if (sneaker.id === data.updatedUserSneaker.sneakerid) {
+                      return { ...sneaker, note: data.updatedUserSneaker.note };
                   }
                   return sneaker;
               });
           });
-      })
-      .catch(err => console.log("Error in adding note:", err));
+          setShowModal(false);
+      } else {
+          console.error("Failed to update sneaker note:", data.message);
+      }
+  })
+  .catch(err => console.log("Error in adding note:", err));
 };
-
 
     const deleteSneaker = (sneakerId) => {
       if (currentUser && currentUser.current_user_id) {
@@ -134,16 +144,20 @@ const handleFormSubmit = (e) => {
 
 
     return (
-        <div>
-            <h1>Your Sneaker Collection</h1>
-            <div>
-                {sneakers.length > 0 ? (
-                    sneakers.map(sneaker => (
-                        <UserSneakerCard key={sneaker.id} {...sneaker} onDelete={deleteSneaker} onClick={openUpdateModal} />
-                    ))
-                ) : (
-                    <p>No sneakers in your collection yet.</p>
+      <div>
+      <h1>Your Sneaker Collection</h1>
+      <div className="container"> {/* Add Bootstrap row class */}
+      <div className="row">
+          {sneakers.length > 0 ? (
+              sneakers.map(sneaker => (
+                  <div className="col-md-4 mb-3" key={sneaker.id}> {/* Add Bootstrap column class for three columns */}
+                      <UserSneakerCard key={sneaker.id} {...sneaker} onDelete={deleteSneaker} onClick={openUpdateModal} />
+                  </div>
+              ))
+          ) : (
+              <p>No sneakers in your collection yet.</p>
                 )}
+                </div>
             </div>
             <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
@@ -162,9 +176,9 @@ const handleFormSubmit = (e) => {
                         placeholder="Add a note about this sneaker"
                     />
                     {formErrors.description && (
-                        <p style={{ color: "red" }}>
+                        <span style={{ color: "red" }}>
                             <small>{formErrors.description}</small>
-                        </p>
+                        </span>
                     )}
                 </Form.Group>
                 <Button className="right-button" variant="primary" type="submit">
@@ -173,6 +187,7 @@ const handleFormSubmit = (e) => {
             </Form>
         </Modal.Body>
     </Modal>
+    <CreateSneakerPage />
         </div>
     );
 };

@@ -7,6 +7,8 @@ import SignUp from "../components/SignUp"
 import UserSneakers from "../components/UserSneakers"
 import SneakerView from "../components/SneakerView"
 import Subscription from "../components/Subscription"
+import Success from "../components/Success"
+import Cancelled from "../components/Cancelled"
 
 const Router = () => (
   <Routes>
@@ -16,6 +18,8 @@ const Router = () => (
     <Route path="my-sneaker" element={<UserSneakers />} />
     <Route path="sneaker/:id" element={<SneakerView />} />
     <Route path="create-subscription-session" element={<Subscription />} />
+    <Route path="success" element={<Success />} />
+    <Route path="cancelled" element={<Cancelled />} />
     <Route path="*" element={<ErrorPage />} />
   </Routes>
 );
