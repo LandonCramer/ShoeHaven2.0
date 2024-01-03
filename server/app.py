@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, redirect
 from flask_restful import Resource, reqparse
 from config import app, db, api #importing app and db from config
 
@@ -44,7 +44,7 @@ class Signup(Resource):
             access_token = create_access_token(identity=username, expires_delta=False)
             refresh_token = create_refresh_token(identity=username, expires_delta=False)
             
-            return {"access_token": access_token, "refresh_token": refresh_token, "user_id": new_user.id}, 201
+            return {"access_token": access_token, "refresh_token": refresh_token, "user": new_user.to_dict()}, 201
 
         except Exception as e:
             return {'message': str(e)}, 500
@@ -61,9 +61,15 @@ class Login(Resource):
 
         db_user = User.query.filter_by(username=username).first()
         if db_user and check_password_hash(db_user.password, password):
+            
+            new_user = User(
+                username=username,
+                password=generate_password_hash(data.get('password'))
+            )
+
             access_token = create_access_token(identity=username, expires_delta=False)
             refresh_token = create_refresh_token(identity=username, expires_delta=False)
-            return {"access_token": access_token, "refresh_token": refresh_token}, 200
+            return {"access_token": access_token, "refresh_token": refresh_token, "user": new_user.to_dict()}, 200
 
         return {'message': "Invalid credentials"}, 401
 
@@ -204,19 +210,20 @@ class UpdateSneaker(Resource):
         }
         return sneaker_dict, 200
 
-# Add the UpdateSneaker resource to the API
 api.add_resource(UpdateSneaker, '/sneaker/<int:id>')
 
 
 
-# When the user clicks add to Collection we are adding this to the UserSneaker table
+# When the user clicks add to Collection, we are adding this to the UserSneaker table
 class AddToCollection(Resource):
+    @jwt_required()
     def post(self):
         try:
             data = request.json
             print('ADD TO COLLECTION', data)
-            user_id = data['userID']
+            user_id = get_jwt_identity()
             sneaker_id = data['sneakerID']
+
 
             # Check if the user already has this sneaker in their collection
             existing_record = UserSneaker.query.filter_by(user_id=user_id, sneakerid=sneaker_id).first()
@@ -228,10 +235,10 @@ class AddToCollection(Resource):
             db.session.add(new_user_sneaker)
             db.session.commit()
 
-            return {'message': 'Sneaker added to collection'}, 200
+            return {'message': 'Sneaker added to collection'}, 201
 
         except Exception as e:
-            return {'error': str(e)}, 500
+            return {'error': str(e)}, 401
 
 api.add_resource(AddToCollection, '/add-to-collection')
 
@@ -254,7 +261,8 @@ class UserSneakers(Resource):
                         'description': sneaker.description,
                         'price': sneaker.price,
                         'image': sneaker.image,
-                        'link': sneaker.link
+                        'link': sneaker.link,
+                        'note': user_sneaker.note
                         # Add any other fields to include
                     })
 
@@ -276,15 +284,88 @@ class AddNoteToUserSneaker(Resource):
         user_sneaker = UserSneaker.query.filter_by(user_id=current_user_id, sneakerid=sneakerid).first_or_404()
 
         parser = reqparse.RequestParser()
-        parser.add_argument('note', required=True) # Assuming note is required
+        parser.add_argument('note', required=True) 
         data = parser.parse_args()
 
         user_sneaker.note = data['note'] # Update the note field
         db.session.commit()
 
-        return {'message': 'Note added to sneaker successfully'}, 200
+        # Manually create a dictionary to send back
+        updated_user_sneaker = {
+            'sneakerid': user_sneaker.sneakerid,
+            'user_id': user_sneaker.user_id,
+            'note': user_sneaker.note
+        }
+
+        return {'message': 'Note added to sneaker successfully', 'updatedUserSneaker': updated_user_sneaker}, 200
 
 api.add_resource(AddNoteToUserSneaker, '/add-note-to-user-sneaker/<int:sneakerid>')
+
+
+class AddToCart(Resource):
+    @jwt_required()
+    def post(self):
+        user_id = get_jwt_identity()
+        data = request.get_json()
+        sneaker_id = data.get('sneaker_id')
+        quantity = data.get('quantity', 1)
+        print('TESTTEST AddToCart:', user_id, sneaker_id)
+        # Fetch the user using filter_by
+        user = User.query.filter_by(username=user_id).first()
+        if not user:
+            return {'error': 'User not found'}, 404
+
+        # Check if user has a cart, if not, create one
+        cart = Cart.query.filter_by(user_id=user_id).first()
+        if not cart:
+            cart = Cart(user_id=user_id)
+            db.session.add(cart)
+            db.session.commit()
+
+        # Check if sneaker is already in the cart
+        cart_sneaker = CartSneaker.query.filter_by(cart_id=cart.id, sneaker_id=sneaker_id).first()
+        if cart_sneaker:
+            # Increment quantity
+            cart_sneaker.quantity += quantity
+        else:
+            # Add new sneaker to cart
+            new_cart_sneaker = CartSneaker(cart_id=cart.id, sneaker_id=sneaker_id, quantity=quantity)
+            db.session.add(new_cart_sneaker)
+
+        db.session.commit()
+        return {'message': 'Sneaker added to cart'}, 200
+
+api.add_resource(AddToCart, '/add-to-cart')
+
+
+
+YOUR_DOMAIN = 'http://localhost:3000'
+stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
+# class CreateCheckoutSession(Resource):
+@app.route('/create-checkout-session/<int:id>',methods=["POST"])
+def post(id):
+
+    sneaker_to_purchase = Sneaker.query.get(id)
+
+    # if sneaker_to_purchase is None:
+    #     return {'error': 'Sneaker not found'}, 404
+
+    checkout_session = stripe.checkout.Session.create(
+        line_items=[
+            {
+                'price': sneaker_to_purchase.stripe_price_id,
+                'quantity': 1
+            }
+        ],
+        mode='payment',
+        success_url=YOUR_DOMAIN + '/success',
+        cancel_url=YOUR_DOMAIN + '/cancelled',
+    )
+    return redirect(checkout_session.url, code=303)
+
+# Add the resource to the API and define the route
+# api.add_resource(CreateCheckoutSession, '/create-checkout-session/<int:id>')
+
 
 class DeleteUserSneaker(Resource):
     @jwt_required()

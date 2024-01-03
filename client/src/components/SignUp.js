@@ -3,9 +3,13 @@ import { Form, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserContext } from '../Helpers/AuthProvider';
 
+//toast
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const SignUp = () => {
     const navigate = useNavigate();
-    const { setCurrentUser } = useContext(UserContext);
+    const { handleSetUser } = useContext(UserContext);
     const [formData, setFormData] = useState({
       username: '',
       email: '',
@@ -37,10 +41,11 @@ const SignUp = () => {
   const submitForm = (e) => {
     e.preventDefault();
     if (!validateForm()) {
+      toast('Not valid')
       return;
     }
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
+      toast('Passwords do not match');
       return;
     }
 
@@ -55,25 +60,22 @@ const SignUp = () => {
     };
 
     fetch('/signup', requestOptions)
-      .then(res => res.json())
-      .then(data => {
-        console.log(data);
-        if (data.user) {
-          setCurrentUser(data.user); // Update the global state with the logged-in user
-          navigate('/'); // Navigate to the home page or dashboard
-        } else {
-          // Handle errors or invalid signup!!
-        }
-      })
-      .catch(err => console.log(err));
+    .then(res => res.json())
+    .then(data => {
+      console.log(data);
+      if (data.user) {
+        localStorage.setItem("accessToken", data.access_token);
+        localStorage.setItem("refreshToken", data.refresh_token);
+        handleSetUser(data.user); // Update the global state with the logged-in user
+        navigate('/'); // Navigate to the home page or dashboard
+      } else if(data.message) {
+        toast(data.message)
+      }
+    })
+    .catch(err => toast(err));
+};
 
-    setFormData({
-      username: '',
-      email: '',
-      password: '',
-      confirmPassword: ''
-    });
-  };
+
   return (
     <div className="container">
       <div className="form">
@@ -137,6 +139,7 @@ const SignUp = () => {
           </Form.Group>
         </Form>
       </div>
+      <ToastContainer />
     </div>
   );
 };

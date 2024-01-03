@@ -6,7 +6,7 @@ import { Card, Button} from 'react-bootstrap'
 import { UserContext } from "../Helpers/AuthProvider";
 
 
-function SneakerCard({image, name, color, link, description, price, id, brand, cartItem, setCartItem, onClick, onDelete}) {
+function SneakerCard({image, name, color, link, description, price, id, brand, cartItem, setCartItem}) {
   const { currentUser } = useContext(UserContext);
   // console.log("currentUser home SneakerCard: ", currentUser.current_user_id);
 
@@ -16,21 +16,9 @@ function SneakerCard({image, name, color, link, description, price, id, brand, c
     let shopLink = link
     let shopDescription = description
     let shopPrice = price
-    let shopID = id
     let shopBrand = brand
     
-    const newShoe = {
-      // key: {shopID},
-      id: shopID,
-      colorway: shopColorway,
-      name: shopName,
-      description: shopDescription,
-      price: shopPrice,
-      link: shopLink,
-      image: shopImage,
-      brand: shopBrand,
-    }
-    
+
 
     
     function addShoesToCollection() {
@@ -65,6 +53,7 @@ function SneakerCard({image, name, color, link, description, price, id, brand, c
       <Card variant="dark" style={{ width: '25rem' }}>
         <Card.Img variant="left" src={shopImage} alt={shopName} />
         <Card.Body>
+        <Card.Title>{shopBrand}</Card.Title>
           <Card.Title>{shopName}</Card.Title>
           <Card.Subtitle>{shopColorway}</Card.Subtitle>
           <Card.Text>
@@ -77,9 +66,6 @@ function SneakerCard({image, name, color, link, description, price, id, brand, c
              {"Add to Collection"} </Button>
             <br/>
             <br/>
-            <Button variant='primary' onClick={()=>onClick(id)}>Update</Button>
-            {' '}
-           
         </Card.Body>
       </Card>    
   

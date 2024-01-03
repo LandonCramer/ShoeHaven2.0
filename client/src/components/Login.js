@@ -1,8 +1,11 @@
 import React, { useState, useContext } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-
 import { UserContext } from '../Helpers/AuthProvider'; // Adjust this import based on your context file location
+
+//toast
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({ username: '', password: '' });
@@ -53,12 +56,11 @@ const LoginPage = () => {
                         .then(resObj => {
                             localStorage.setItem("accessToken", resObj.access_token);
                             localStorage.setItem("refreshToken", resObj.refresh_token);
-                            // login(resObj.access_token);
-                            handleSetUser(resObj.db_user); // Assuming you have this method in your context
+                            handleSetUser(resObj.user); 
                             navigate('/');
                         });
                 } else {
-                    res.json().then(errObj => alert(errObj.message));
+                    res.json().then(errObj => toast(errObj.message));
                 }
             });
     };
@@ -98,6 +100,7 @@ const LoginPage = () => {
                     </Form.Group>
                 </Form>
             </div>
+            <ToastContainer />
         </div>
     );
 };
