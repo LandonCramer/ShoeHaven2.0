@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import UserProvider  from '../Helpers/AuthProvider'
 import Router from '../Helpers/Router'
 import NavBar from '../components/Navbar';
-import './DarkMode.css'
+import Footer from './Footer'
+import '../styling/DarkMode.css'
+import '../styling/Footer.css'
+
 function App() {
   
     const [isDark, setIsDark] = useState(() => {
@@ -23,12 +26,15 @@ function App() {
     };
 
   return (
-     <UserProvider>
-       <NavBar toggleDarkMode={toggleDarkMode} />
-       <div className={`app-container ${isDark ? 'dark-mode' : ''}`}>
-                <Router />
-            </div>
-     </UserProvider>
+    <UserProvider>
+    <div className="main-container"> {/* Flex container */}
+        <NavBar toggleDarkMode={toggleDarkMode} />
+        <div className={`content ${isDark ? 'dark-mode' : ''}`}> {/* Content area */}
+            <Router />
+        </div>
+        <Footer />
+    </div>
+</UserProvider>
     
   );
 }
