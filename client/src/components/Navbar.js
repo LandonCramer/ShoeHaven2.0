@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 // import { Link } from "react-router-dom";
 import { UserContext } from "../Helpers/AuthProvider";
 
-const LoggedInLinks = () => {
+const LoggedInLinks = ({toggleDarkMode}) => {
   const { logoutUser } = useContext(UserContext);
   const navigate = useNavigate();
 
@@ -31,6 +31,9 @@ const LoggedInLinks = () => {
         <Link className="nav-link active" to="/create-subscription-session">
           Create Subscription Session
         </Link>
+      </li>
+      <li className="nav-item">
+        <button className="nav-link active" onClick={toggleDarkMode}>Dark Mode</button>
       </li>
       <li className="nav-item">
         <Link className="nav-link active" to="/login" onClick={handleLogout}>
@@ -63,7 +66,7 @@ const LoggedOutLinks = () => {
   );
 };
 
-const NavBar = () => {
+const NavBar = ({toggleDarkMode}) => {
   const { currentUser } = useContext(UserContext);
   const loggedIn = currentUser && Object.keys(currentUser).length > 0;
 
@@ -85,7 +88,7 @@ const NavBar = () => {
       </button>
       <div className="collapse navbar-collapse" id="navbarNav">
         <ul className="navbar-nav">
-          {loggedIn ? <LoggedInLinks /> : <LoggedOutLinks />}
+          {loggedIn ? <LoggedInLinks toggleDarkMode={toggleDarkMode} /> : <LoggedOutLinks />}
         </ul>
       </div>
     </nav>

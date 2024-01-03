@@ -1,0 +1,29 @@
+/* Dark mode styles */
+.dark-mode {
+    background-color: #121212; /* Dark background */
+    color: #ffffff; /* Light text */
+}
+
+.dark-mode header,
+.dark-mode footer {
+    background-color: #1e1e1e; /* Slightly lighter dark background for header and footer */
+}
+
+.dark-mode a {
+    color: #9fa8da; /* Lighter color for links */
+}
+
+.dark-mode button {
+    background-color: #333333; /* Dark background for buttons */
+    color: #ffffff; /* Light text for buttons */
+    border-color: #444444; /* Slightly lighter border for buttons */
+}
+
+.dark-mode input,
+.dark-mode textarea {
+    background-color: #333333; /* Dark background for input fields */
+    color: #ffffff; /* Light text for input fields */
+    border-color: #444444; /* Slightly lighter border for input fields */
+}
+
+/* You can add more specific styles for other elements or classes in your application */
