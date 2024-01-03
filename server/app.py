@@ -302,14 +302,14 @@ class AddNoteToUserSneaker(Resource):
 api.add_resource(AddNoteToUserSneaker, '/add-note-to-user-sneaker/<int:sneakerid>')
 
 
-class AddToCart(Resource):
+class AddToWishList(Resource):
     @jwt_required()
     def post(self):
         user_id = get_jwt_identity()
         data = request.get_json()
         sneaker_id = data.get('sneaker_id')
         quantity = data.get('quantity', 1)
-        print('TESTTEST AddToCart:', user_id, sneaker_id)
+        print('TESTTEST AddToWishList:', user_id, sneaker_id)
         # Fetch the user using filter_by
         user = User.query.filter_by(username=user_id).first()
         if not user:
@@ -333,9 +333,9 @@ class AddToCart(Resource):
             db.session.add(new_cart_sneaker)
 
         db.session.commit()
-        return {'message': 'Sneaker added to cart'}, 200
+        return {'message': 'Sneaker added to wish list'}, 200
 
-api.add_resource(AddToCart, '/add-to-cart')
+api.add_resource(AddToWishList, '/add-to-wish-list')
 
 
 

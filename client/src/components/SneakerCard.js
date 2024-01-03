@@ -5,6 +5,9 @@ import { Card, Button} from 'react-bootstrap'
 //importing the current user, when user clicks add to collection we can send the current user info
 import { UserContext } from "../Helpers/AuthProvider";
 
+//toast
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function SneakerCard({image, name, color, link, description, price, id, brand, cartItem, setCartItem}) {
   const { currentUser } = useContext(UserContext);
@@ -35,18 +38,28 @@ function SneakerCard({image, name, color, link, description, price, id, brand, c
         };
         console.log("Checking to see if we are getting user and sneaker id",{ userID: currentUser.current_user_id, sneakerID: id })
         fetch('/add-to-collection', requestOptions)
-          .then(response => response.json())
-          .then(data => {
-            console.log(data.message);
-            alert('Added to collection')
-          })
-          .catch(error => {
-            console.error('Error adding to collection:', error);
-          });
-      } else {
-        console.log('User not logged in');
-      }
-    }
+      .then(response => response.json())
+      .then(data => {
+        // Check here if the addition was successful, then show a toast
+        toast("Added to collection", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      })
+      .catch(error => {
+        // Handle any errors here
+        toast.error('Error adding to collection');
+      });
+  } else {
+    // Handle case when user is not logged in
+    toast.error('User not logged in');
+  }
+}
 
   return (
     
@@ -67,6 +80,7 @@ function SneakerCard({image, name, color, link, description, price, id, brand, c
             <br/>
             <br/>
         </Card.Body>
+        <ToastContainer />
       </Card>    
   
   )

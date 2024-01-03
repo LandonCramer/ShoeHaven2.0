@@ -3,8 +3,13 @@ import React, {useContext} from 'react';
 // import { useState, useEffect } from 'react';
 import { Card, Button} from 'react-bootstrap'
 //importing the current user, when user clicks add to collection we can send the current user info
-// import { UserContext } from "../Helpers/AuthProvider";
+
 import { UserContext } from '../Helpers/AuthProvider';
+
+//toast
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function UserSneakerCard({image, name, color, link, description, price, id, brand, note, cartItem, setCartItem, onClick, onDelete}) {
     const { currentUser } = useContext(UserContext);
@@ -33,11 +38,11 @@ function UserSneakerCard({image, name, color, link, description, price, id, bran
     }
     
 
-    const handleAddToCart = (sneakerId) => {
+    const handleWishList = (sneakerId) => {
         const userId = currentUser.current_user_id; // Assuming currentUser contains the logged-in user's data
         const token = localStorage.getItem('accessToken');
         
-        fetch('/add-to-cart', {
+        fetch('/add-to-wish-list', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -47,6 +52,7 @@ function UserSneakerCard({image, name, color, link, description, price, id, bran
         })
         .then(response => response.json())
         .then(data => {
+          toast(data.message)
           console.log(data.message);
           // Additional logic for successful addition
         })
@@ -65,7 +71,7 @@ function UserSneakerCard({image, name, color, link, description, price, id, bran
       //     });
       
       //     // Check for a redirect response (303 See Other)
-      //     if (response.status === 303) {
+      //     if (response.ok) {
       //       // Get the redirect URL from the 'Location' header
       //       const checkoutUrl = response.headers.get('Location');
       //       // Redirect the browser to the Stripe checkout page
@@ -102,7 +108,8 @@ function UserSneakerCard({image, name, color, link, description, price, id, bran
             {' '}
             <Button variant='primary' style={{backgroundColor:'red'}} onClick={()=>onDelete(id)}>Delete</Button>
             {' '}
-            <Button onClick={() => handleAddToCart(id)}>Add to Cart</Button>
+            <Button onClick={() => handleWishList(id)}>Wish List</Button>
+            <br/>
             <br/>
             {/* <form onSubmit={()=>handleSubmit(id)}>
                 <Button variant='primary' type='submit'>Checkout</Button>
@@ -111,6 +118,7 @@ function UserSneakerCard({image, name, color, link, description, price, id, bran
                   <Button variant='primary' type='submit'>Checkout</Button>
                 </form>
         </Card.Body>
+        <ToastContainer />
       </Card>    
   
   )
