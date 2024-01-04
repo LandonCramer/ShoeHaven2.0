@@ -117,20 +117,15 @@ class CreateSneaker(Resource):
     @jwt_required()
     def post(self):
         """Create a new sneaker"""
-        #validate data sent in request
-        parser = reqparse.RequestParser()
-        parser.add_argument('brand', required=True, help="Brand cannot be blank!")
-        parser.add_argument('name', required=True)
-        parser.add_argument('color')
-        parser.add_argument('description')
-        parser.add_argument('price', type=float)
-        parser.add_argument('image')
-        parser.add_argument('link')
-        data = parser.parse_args()
+        # Access JSON data directly from the request
+        data = request.get_json()
+
+        # Validation or further processing can go here
 
         new_sneaker = Sneaker(
-            brand=data['brand'],
-            name=data['name'],
+            user_id=data.get('user_id'),
+            brand=data.get('brand'),
+            name=data.get('name'),
             color=data.get('color'),
             description=data.get('description'),
             price=data.get('price'),
@@ -152,7 +147,6 @@ class CreateSneaker(Resource):
             'link': new_sneaker.link
         }
         return sneaker_dict, 201
-
 
 api.add_resource(CreateSneaker, '/sneakers')
 

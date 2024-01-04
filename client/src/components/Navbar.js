@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 // import { Link } from "react-router-dom";
 import { UserContext } from "../Helpers/AuthProvider";
+import '../styling/NavBar.css'
 
 const LoggedInLinks = ({toggleDarkMode}) => {
   const { logoutUser } = useContext(UserContext);
@@ -33,9 +34,15 @@ const LoggedInLinks = ({toggleDarkMode}) => {
         </Link>
       </li>
       <li className="nav-item">
+  <label className="switch">
+    <input type="checkbox" onClick={toggleDarkMode} />
+    <span className="slider round"></span>
+  </label>
+</li>
+      {/* <li className="nav-item">
         <button className="nav-link active" onClick={toggleDarkMode}>Dark Mode</button>
-      </li>
-      <li className="nav-item">
+      </li> */}
+      <li className="nav-item logout-link">
         <Link className="nav-link active" to="/login" onClick={handleLogout}>
           Log Out
         </Link>
