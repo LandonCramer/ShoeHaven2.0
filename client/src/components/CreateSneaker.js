@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Card, Form, Button, InputGroup } from "react-bootstrap";
 
+ import { UserContext } from '../Helpers/AuthProvider';
 const CreateSneakerPage = () => {
+  const { currentUser } = useContext(UserContext);
+  const userId = currentUser.current_user_id;
   const [sneaker, setSneaker] = useState({
+    user_id: "",
     name: '',
     color: '',
     brand: '',
@@ -13,12 +17,31 @@ const CreateSneakerPage = () => {
   });
 
   const handleChange = (event) => {
-    setSneaker({ ...sneaker, [event.target.name]: event.target.value });
+    setSneaker({ ...sneaker, [event.target.name]: event.target.value, user_id: userId});
   };
 
-  const handleSubmit = (event) => {
+  const handleAddSneaker= (event) => {
     event.preventDefault();
+    
+    const token = localStorage.getItem('accessToken')
+    
     console.log(sneaker);
+
+    const requestOptions = {
+      method:"POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body:JSON.stringify( sneaker)
+    }
+    fetch('http://127.0.0.1:5555/sneakers', requestOptions)
+    .then(res => res.json())
+    .then(data => {
+        console.log('TEST Add Sneaker', data)
+        
+    })
+    .catch(err => console.log(err))
     // Rest of the submission logic
   };
 
@@ -29,7 +52,7 @@ const CreateSneakerPage = () => {
       <Card>
         <Card.Body>
           <Card.Title>Create Sneaker</Card.Title>
-          <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleAddSneaker}>
             <Form.Group>
               <Form.Label>Shoe Name</Form.Label>
               <Form.Control
@@ -109,7 +132,7 @@ const CreateSneakerPage = () => {
                 onChange={handleChange}
               />
             </Form.Group>
-
+            <br/>
             <Button variant="primary" type="submit">
               Submit
             </Button>

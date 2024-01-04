@@ -160,6 +160,13 @@ class UserSneaker(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     sneakerid = db.Column(db.Integer, db.ForeignKey('sneakers.id'), primary_key=True)
     note = db.Column(db.String(1000)) # New column for user's note about the sneaker
+    brand = db.Column(db.String)
+    name= db.Column(db.String)
+    color = db.Column(db.String)
+    description = db.Column(db.String)
+    price = db.Column(db.Float)
+    image = db.Column(db.String)
+    link = db.Column(db.String)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
@@ -195,3 +202,12 @@ class CartSneaker(db.Model):
 
     cart = db.relationship("Cart", back_populates="cart_sneakers")
     sneaker = db.relationship('Sneaker', back_populates='cart_sneakers')
+
+
+
+
+
+
+
+
+    
