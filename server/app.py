@@ -123,7 +123,6 @@ class CreateSneaker(Resource):
         # Validation or further processing can go here
 
         new_sneaker = Sneaker(
-            user_id=data.get('user_id'),
             brand=data.get('brand'),
             name=data.get('name'),
             color=data.get('color'),
