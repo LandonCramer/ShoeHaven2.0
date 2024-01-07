@@ -98,11 +98,12 @@ function UserSneakerCard({image, name, color, link, description, price, id, bran
           <div>
           {note && <div>Note: {note}</div>}
           </div>
+          <h4>SALE: $100</h4>
+          <br></br>
           <Button variant="dark" href={shopLink}>
-             {"Purchase for $"}{shopPrice}{" from ShoeHaven"}
+          {"Purchase "}{" from "}{shopBrand}
              </Button><br/><br/>
          
-            <br/>
             <br/>
             <Button variant='primary' onClick={()=>onClick(newShoe)}>Update</Button>
             {' '}
