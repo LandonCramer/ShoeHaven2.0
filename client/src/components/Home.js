@@ -60,10 +60,12 @@ const LoggedInHome = () => {
       </div>
     </div>
   );
-
+  const userName = currentUser.current_user_id;
   return (
     <div className="sneakers">
-      <h1>List of Sneakers: ShoeHaven Logged In</h1>
+      
+      <h1>Welcome {userName}!</h1>
+      <br/>
       {storeFront}
     </div>
   );

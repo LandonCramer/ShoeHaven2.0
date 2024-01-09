@@ -1,0 +1,17 @@
+
+
+
+.construction-message {
+    color: #000000;
+    background-color: #f0c32d;
+    border: 1px solid #ffeeba;
+    border-radius: 10px;
+    padding: 20px;
+    display: inline-block;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.construction-message em {
+    font-style: normal;
+    color: #e74c3c;
+}
