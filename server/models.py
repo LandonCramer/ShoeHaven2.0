@@ -157,7 +157,7 @@ class Sneaker(db.Model):
 class UserSneaker(db.Model):
     __tablename__ = 'user_sneakers'
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    user_id = db.Column(db.String, db.ForeignKey('users.id'), primary_key=True)
     sneakerid = db.Column(db.Integer, db.ForeignKey('sneakers.id'), primary_key=True)
     note = db.Column(db.String(1000)) 
     created_at = db.Column(db.DateTime, server_default=db.func.now())
@@ -177,7 +177,7 @@ class Cart(db.Model):
     __tablename__ = 'carts'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.String, db.ForeignKey('users.id'))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
